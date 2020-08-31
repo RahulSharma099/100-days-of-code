@@ -1,17 +1,15 @@
 const yargs = require("yargs");
 const chalk = require('chalk');
 const fs = require('fs');
+const { title } = require("process");
 
-const getNotes = function() {
+const getNotes = () => {
     return 'your Notes...';
 }
 
-const addNote = function(title, body) {
+const addNote = (title, body) => {
     const notes = loadNotes();
-    const duplicateNotes = notes.filter(function(note) {
-        return note.title === title;
-    })
-
+    const duplicateNotes = notes.filter((note) => note.title === title)
 
     if (duplicateNotes.length === 0) {
         notes.push({
@@ -26,11 +24,9 @@ const addNote = function(title, body) {
 
 }
 
-const removeNote = function(title) {
+const removeNote = (title) => {
     const notes = loadNotes();
-    const noteToKeep = notes.filter(function(note) {
-        return note.title !== title;
-    })
+    const noteToKeep = notes.filter((note) => note.title !== title)
     if (notes.length > noteToKeep.length) {
         console.log(chalk.green.inverse("Note Removed"));
         saveNotes(noteToKeep);
@@ -39,14 +35,32 @@ const removeNote = function(title) {
     }
 }
 
+const listNote = () => {
+    const notes = loadNotes()
+    console.log(chalk.red.inverse('Your Notes'))
+    notes.forEach((note) => {
+        console.log(note.title)
+    })
 
+}
 
-const saveNotes = function(notes) {
+const readNote = (title) => {
+    const notes = loadNotes();
+    const findNote = notes.find((note) => note.title === title)
+    if (findNote) {
+        console.log(chalk.blue.inverse(findNote.title))
+        console.log(findNote.body)
+    } else {
+        console.log(chalk.red.inverse('No note found'))
+    }
+}
+
+const saveNotes = (notes) => {
     const dataJson = JSON.stringify(notes);
     fs.writeFileSync('notes.json', dataJson);
 }
 
-const loadNotes = function() {
+const loadNotes = () => {
     try {
         const dataBuffer = fs.readFileSync('notes.json');
         const dataJson = dataBuffer.toString();
@@ -59,5 +73,7 @@ const loadNotes = function() {
 module.exports = {
     getNotes: getNotes,
     addNote: addNote,
-    removeNote: removeNote
+    removeNote: removeNote,
+    listNote: listNote,
+    readNote: readNote
 }
